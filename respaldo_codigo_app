@@ -1,0 +1,115 @@
+/*
+
+var express = require('express');
+const bodyParser = require('body-parser')
+var mysql = require('mysql');
+var cors = require('cors');
+const myConnection=require('express-myconnection');
+
+var app = express();
+
+app.use(express.json());
+app.use(cors());
+
+app.use(myConnection(mysql,{
+    host:'localhost',
+    user:'root',
+    password:'159753',
+    database: 'didactic'
+}));
+
+app.get('/', function(req,res){
+    res.send('Ruta inicio');
+});
+
+//Mostrar todas las personas
+app.get('/personas', (req,res) =>{
+    req.getConnection((err,conn)=>{
+    conn.query('SELECT * FROM personas', (err,filas)=>{
+        if(err){
+            throw err;
+        }else{
+            res.send(filas);
+        }
+        })
+    });
+});
+//Mostrar una de las personas
+app.get('/personas/:cvePersona', (req,res) =>{
+    req.getConnection((err,conn)=>{
+    conn.query('SELECT nombre,apellidoPat,apellidoMat FROM personas WHERE cvePersona = ?',[req.params.cvePersona], (err,fila)=>{
+        if(err){
+            throw err;
+        }else{
+            res.send(fila);
+            //res.send(fila[0].nombre);
+        }
+        })
+    });
+});
+
+//Insertar personas
+app.post('/personas', (req,res) => {
+    req.getConnection((err,conn)=>{
+        if(err) return res.send(err)
+        conn.query('INSERT INTO personas SET ?'[req.body],(err,filas)=>{
+            if(err) return res.send(err)
+
+            res.send('Mamadas pendejas')
+        })
+    })
+});
+
+/*
+//Insertar personas
+app.post('/personas', (req,res) => {
+    const data=req.body;
+    req.conexion((err,conn) => {
+        conn.query('INSERT INTO personas SET ?',[data],(err,persona) => {
+            if(err){
+                throw err;
+            }else{
+                res.send(fila);
+                //res.send(fila[0].nombre);
+            }
+        });
+    });
+*/
+
+/*
+//Editar personas
+app.put('/personas/:cvePersona', (req,res) => {
+    req.getConnection((err,conn)=>{
+        if(err) return res.send(err)
+        conn.query('UPDATE persona SET ? WHERE cvePersona = ?'[req.body,req.params.cvePersona], (err,filas)=>{
+            if(err) return res.send(err)
+
+            res.send('Persona actualizada')
+        })
+    })
+}); 
+
+//eliminar personas
+app.delete('/personas/:cvePersona', (req,res) => {
+    conexion.query("DELETE FROM personas WHERE cvePersona = ?", [req.params.cvePersona], function(err,filas){
+        if(err){
+            throw err;
+        }else{
+            res.send(filas);
+        }
+    });
+});
+
+
+app.listen('3000',function(){
+    console.log('Server on port 3000')
+});
+
+
+/*
+<td><img src="../../../assets/pics/logotipoUTNG.png" alt="logotipoUTNG" width="70px" lang="80px"></td>
+              <td>Ingresar nombre del curso</td>
+              <td>Ingresar nombre del docente</td>
+              <td><a href="../ver-temas"><img src="../../../assets/pics/lupa.png" alt="Lupa" width="55px" height="35px"></a></td>
+              <td><button id="button2">Matricularme</button></td>
+*/
